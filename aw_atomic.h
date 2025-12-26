@@ -7,7 +7,7 @@
 // 编译器后端选择逻辑
 // ============================================================================
 
-// 如果环境支持 C11 stdatomic，则不引入特定编译器的后端头文件，确保它们处于"无效状态"
+// 如果环境支持 C11 stdatomic，则不引入特定编译器的后端头文件
 #ifndef AW_USE_STDATOMIC
     #include "aw_atomic_gcc.h"
     #include "aw_atomic_msvc.h"

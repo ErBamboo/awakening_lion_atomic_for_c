@@ -1,7 +1,7 @@
 #ifndef AW_ATOMIC_BASE_H
 #define AW_ATOMIC_BASE_H
 
-#include "port/awlf_port_compiler.h"
+#include "port/aw_port_compiler.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -11,37 +11,10 @@
 // ============================================================================
 
 // 检测 C11 及以上版本的原子操作支持
-// 如果定义了 AW_USE_STDATOMIC，后续将直接使用标准库接口
+// 如果定义了 __STDC_NO_ATOMICS__, 后续将直接使用标准库接口
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L && !defined(__STDC_NO_ATOMICS__)
     #define AW_USE_STDATOMIC
 #endif
-
-// 编译器类型检测
-#if defined(_MSC_VER)
-    #define AW_COMPILER_MSVC
-#elif defined(__ARMCC_VERSION)
-    // ARM Compiler 6 (基于 Clang)
-    #if __ARMCC_VERSION >= 6000000
-        #define AW_COMPILER_AC6
-        #define AW_COMPILER_GCC_LIKE
-        #define AW_COMPILER AW_COMPILER_AC6
-    #else
-        // ARM Compiler 5
-        #define AW_COMPILER_AC5
-        #define AW_COMPILER AW_COMPILER_AC5
-    #endif
-#elif defined(__CC_ARM)
-    // ARM Compiler 5 (标准宏)
-    #define AW_COMPILER_AC5
-    #define AW_COMPILER AW_COMPILER_AC5
-#elif defined(__clang__) || defined(__GNUC__)
-    #define AW_COMPILER_GCC_LIKE
-    #define AW_COMPILER AW_COMPILER_GCC_LIKE
-#else
-    #error "port/compiler: [Err]: Unsupported compiler"
-#endif
-
-
 
 /**
  * AC6 (基于 Clang) 完美兼容 GCC 原子 Builtin
@@ -135,23 +108,5 @@ typedef aw_atomic_t(size_t)             aw_atomic_size_t;
 // ============================================================================
 #define AW_INLINE static inline
 
-// CPU Pause (用于自旋锁优化)
-// 注意: <stdatomic.h> 不包含 pause/yield 指令，仍需依赖编译器内置函数
-AW_INLINE void aw_cpu_pause(void) {
-#if defined(AW_COMPILER_MSVC)
-    _mm_pause();
-#elif defined(AW_COMPILER_GCC_LIKE)
-    #if defined(__i386__) || defined(__x86_64__)
-        __asm__ __volatile__("pause");
-    #elif defined(__aarch64__) || defined(__arm__)
-        __asm__ __volatile__("yield");
-    #endif
-#elif defined(AW_COMPILER_AC5)
-    __yield();
-#else
-    // 无法识别编译器时，如果是 C11 模式则留空，不影响逻辑正确性，只影响自旋效率
-    (void)0; 
-#endif
-}
 
 #endif // AW_ATOMIC_BASE_H

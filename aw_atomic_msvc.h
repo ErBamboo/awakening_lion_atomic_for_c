@@ -90,7 +90,7 @@ AW_INLINE short _aw_msvc_fetch_xor_16(volatile short* ptr, short val, aw_memory_
 }
 
 // ----------------------------------------------------------------------------
-// 32-bit Implementation (long in MSVC is 32-bit)
+// 32-bit Implementation (long 在 MSVC 中是 32 位整数)
 // ----------------------------------------------------------------------------
 AW_INLINE long _aw_msvc_load_32(volatile long* ptr, aw_memory_order order) {
     long v = *ptr;

@@ -5,8 +5,8 @@
 
 #ifdef AW_COMPILER_GCC_LIKE
 
-// GCC builtins are inherently generic regarding types.
-// We define macros to forward arguments directly.
+// GCC 内置函数在类型方面具有通用性。
+// 我们定义了一些宏来直接传递参数。
 
 #define _aw_impl_load(ptr, order) \
     __atomic_load_n(ptr, order)
